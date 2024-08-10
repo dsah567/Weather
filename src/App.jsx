@@ -4,8 +4,8 @@ import { useState } from 'react';
 function App() {
    const [location, setLocation] = useState(null);
    const [specificLocation, setspecificLocation] = useState(null);
-   const [city, setCity] = useState('');
-   const [country, setCountry] = useState('');
+   const [Latitude, setLat] = useState('');
+   const [Longititude, setLong] = useState('');
    const [locationError, setLocationError] = useState('');
 
   const currentWeather =  () => {
@@ -43,29 +43,11 @@ function App() {
   };
 
   const weatherOfLocation = async () => {
-    let configLocation = {
-      method: 'get',
-      maxBodyLength: Infinity,
-      url: `http://api.openweathermap.org/geo/1.0/direct?q=${city},${country}&limit=1&appid=${import.meta.env.VITE_WEATHER_API_KEY}`,
-      headers: { }
-    };
-    let latitude ="";
-    let longitude="";
-    
-    await axios.request(configLocation)
-    .then((response) => {
-      latitude =response.data[0].lat;
-      longitude=response.data[0].lon;
-      console.log(latitude,longitude);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
     let weatherCond=""
           let config = {
             method: 'get',
             maxBodyLength: Infinity,
-            url: `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${import.meta.env.VITE_WEATHER_API_KEY}`,
+            url: `https://api.openweathermap.org/data/2.5/weather?lat=${Latitude}&lon=${Longititude}&appid=${import.meta.env.VITE_WEATHER_API_KEY}`,
             headers: { }
           };
           
@@ -79,7 +61,7 @@ function App() {
             console.log(error);
           });
 
-          setspecificLocation(`Latitude: ${latitude}, Longitude: ${longitude} and weather is ${weatherCond}`);
+          setspecificLocation(`Latitude: ${Latitude}, Longitude: ${Longititude} and weather is ${weatherCond}`);
   };
   
 
@@ -108,16 +90,16 @@ function App() {
 <div className="flex flex-col items-center space-y-4 w-full max-w-sm">
         <input
           type="text"
-          placeholder="City"
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
+          placeholder="Latitude"
+          value={Latitude}
+          onChange={(e) => setLat(e.target.value)}
           className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
         />
         <input
           type="text"
-          placeholder="Country"
-          value={country}
-          onChange={(e) => setCountry(e.target.value)}
+          placeholder="Longititude"
+          value={Longititude}
+          onChange={(e) => setLong(e.target.value)}
           className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
         />
         <button
