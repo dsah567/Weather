@@ -1,48 +1,137 @@
 import axios from 'axios'
+import { useState } from 'react';
 
 function App() {
-  
-  let config = {
-    method: 'get',
-    maxBodyLength: Infinity,
-    url: `https://api.openweathermap.org/data/2.5/weather?lat=44.34&lon=10.99&appid=${import.meta.env.VITE_WEATHER_API_KEY}`,
-    headers: { }
-  };
-  
-  axios.request(config)
-  .then((response) => {
-    console.log(response.data.weather[0].main);
-  })
-  .catch((error) => {
-    console.log(error);
-  });
+   const [location, setLocation] = useState(null);
+   const [specificLocation, setspecificLocation] = useState(null);
+   const [city, setCity] = useState('');
+   const [country, setCountry] = useState('');
+   const [locationError, setLocationError] = useState('');
 
-  const options = {
-    enableHighAccuracy: true,
-    timeout: 5000,
-    maximumAge: 0,
+  const currentWeather =  () => {
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+         async (position) => {
+          const { latitude, longitude } = position.coords;
+          let weatherCond=""
+          let config = {
+            method: 'get',
+            maxBodyLength: Infinity,
+            url: `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${import.meta.env.VITE_WEATHER_API_KEY}`,
+            headers: { }
+          };
+          
+          await axios.request(config)
+          .then((response) => {
+            weatherCond = `${response.data.weather[0].main} -> ${response.data.weather[0].description}`;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+
+          setLocation(`Latitude: ${latitude}, Longitude: ${longitude} and weather is ${weatherCond}`);
+          setLocationError('');
+        },
+        () => {
+          setLocationError('Please turn on your location.');
+        }
+      );
+    } else {
+      setLocationError('Geolocation is not supported by this browser.');
+    }
+  };
+
+  const weatherOfLocation = async () => {
+    let configLocation = {
+      method: 'get',
+      maxBodyLength: Infinity,
+      url: `http://api.openweathermap.org/geo/1.0/direct?q=${city},${country}&limit=1&appid=${import.meta.env.VITE_WEATHER_API_KEY}`,
+      headers: { }
+    };
+    let latitude ="";
+    let longitude="";
+    
+    await axios.request(configLocation)
+    .then((response) => {
+      latitude =response.data[0].lat;
+      longitude=response.data[0].lon;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+    let weatherCond=""
+          let config = {
+            method: 'get',
+            maxBodyLength: Infinity,
+            url: `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${import.meta.env.VITE_WEATHER_API_KEY}`,
+            headers: { }
+          };
+          
+          await axios.request(config)
+          .then((response) => {
+            weatherCond = `${response.data.weather[0].main} -> ${response.data.weather[0].description}`;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+
+          setspecificLocation(`Latitude: ${latitude}, Longitude: ${longitude} and weather is ${weatherCond}`);
+          setLocationError('');
   };
   
-  function success(pos) {
-    const crd = pos.coords;
-  
-    console.log("Your current position is:");
-    console.log(`Latitude : ${crd.latitude}`);
-    console.log(`Longitude: ${crd.longitude}`);
-    console.log(`More or less ${crd.accuracy} meters.`);
-  }
-  
-  function error(err) {
-    console.warn(`ERROR(${err.code}): ${err.message}`);
-  }
-  
-  navigator.geolocation.getCurrentPosition(success, error, options);
+
 
   return (
     <>
-    <h1 className="text-green-500 text-center font-extrabold underline">
-      Weather Information
-    </h1>
+    <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-100">
+      <h1 className="text-3xl font-bold mb-4">Weather Information</h1>
+      <button
+        onClick={currentWeather}
+        className="px-4 py-2 bg-blue-600 text-white rounded-lg mb-4 hover:bg-blue-700"
+      >
+        Show Current Weather
+      </button>
+      {location && (
+        <div className="text-lg text-green-700 mb-4">
+          Your Location: {location}
+
+        </div>
+      )}
+
+      {locationError && (
+   <div className="text-lg text-red-600 mb-4">{locationError}</div>
+ )}
+
+<div className="flex flex-col items-center space-y-4 w-full max-w-sm">
+        <input
+          type="text"
+          placeholder="City"
+          value={city}
+          onChange={(e) => setCity(e.target.value)}
+          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+        />
+        <input
+          type="text"
+          placeholder="Country"
+          value={country}
+          onChange={(e) => setCountry(e.target.value)}
+          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+        />
+        <button
+          onClick={weatherOfLocation}
+          className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+        >
+          Search And Show Weather Info
+        </button>
+
+        {specificLocation && (
+        <div className="text-lg text-green-700 mb-4">Location: {specificLocation}
+        </div>
+      )}
+        </div>
+        <h2 className='text-red-600'>some location may not have avaliable service or change in city name may occur</h2>
+    </div>
     </>
   )
 }
