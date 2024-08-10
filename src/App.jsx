@@ -56,6 +56,7 @@ function App() {
     .then((response) => {
       latitude =response.data[0].lat;
       longitude=response.data[0].lon;
+      console.log(latitude,longitude);
     })
     .catch((error) => {
       console.log(error);
@@ -70,6 +71,8 @@ function App() {
           
           await axios.request(config)
           .then((response) => {
+            console.log(response);
+            console.log(response.data);
             weatherCond = `${response.data.weather[0].main} -> ${response.data.weather[0].description}`;
           })
           .catch((error) => {
@@ -77,7 +80,6 @@ function App() {
           });
 
           setspecificLocation(`Latitude: ${latitude}, Longitude: ${longitude} and weather is ${weatherCond}`);
-          setLocationError('');
   };
   
 
