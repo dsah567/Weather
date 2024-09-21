@@ -127,7 +127,7 @@ function App()
       <div>
       {
   weatherforcast && (
-    <div className="w-full max-w-4xl overflow-x-auto mx-auto">
+    <div className="w-72 lg:w-full max-w-4xl overflow-x-auto mx-auto">
       <div className="flex space-x-4 p-4">
         {weatherforcast?.list?.map((value) => {
           return (
