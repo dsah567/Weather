@@ -7,7 +7,7 @@ import GithubLogo from './assets/github.svg'
 export default function Header() {
   return (
   <>
-    <header className="bg-gray-800 text-white p-4">
+    <header className="bg-gray-800 text-white p-4 sticky top-0">
       <nav className="container mx-auto flex justify-between items-center">
         <div className="flex-grow lg:flex lg:justify-center space-x-4 lg:space-x-8">
 
@@ -42,7 +42,10 @@ export default function Header() {
       </nav>
     </header>
 
-    <Outlet/>
+    <div id="weather-container" className="p-6 bg-gradient-to-r from-red-500 to-yellow-600 text-black">
+      <Outlet/>
+    </div>
+
   </>
   )
 }
